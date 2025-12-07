@@ -1,57 +1,32 @@
-// ./screens/HomeScreen.tsx
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Text, Card } from 'react-native-paper';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React from "react";
+import { View, Text, Button, StyleSheet } from "react-native";
+import HomeHeroSectionApp from "../../component/HomeScreenContent";
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: undefined;
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-export default function HomeScreen({ navigation }: Props) {
+const HomeScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
-      <Text variant="headlineMedium" style={styles.title}>
-        Welcome to FlyTime
-      </Text>
-
-      <Card style={styles.card}>
-        <Card.Title title="Flight Booking" subtitle="Check flights easily" />
-        <Card.Content>
-          <Text>Book flights, view schedules, and manage bookings.</Text>
-        </Card.Content>
-      </Card>
-
-      <Button
-        mode="contained"
-        style={styles.button}
-        onPress={() => navigation.goBack}
-      >
-        Go to Details
-      </Button>
+      <Text>test11</Text>
+      <HomeHeroSectionApp />
     </View>
   );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
   },
   title: {
-    textAlign: 'center',
-    marginBottom: 20,
+    fontSize: 24,
+    marginBottom: 32,
+    fontWeight: "bold",
   },
-  card: {
-    marginVertical: 20,
-    padding: 10,
-  },
-  button: {
-    marginTop: 20,
+  buttonContainer: {
+    width: "80%",
+    marginVertical: 10,
   },
 });
