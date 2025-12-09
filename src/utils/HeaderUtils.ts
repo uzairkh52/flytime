@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { Alert } from "react-native";
+import HomeScreen from "../Screens/HomeScreen";
+import ChatScreen from "../Screens/ChatScreen";
+import LoginScreen from "../Screens/Auth/LoginScreen";
 
 const ThreadWatcher = () => {
   const navigation = useNavigation();
@@ -18,13 +21,15 @@ const ThreadWatcher = () => {
   
   useEffect(()=> {
   if (isuserLogin?.status === 200) {
-    navigation.navigate("Home");
+    navigation.navigate("HomeScreen");
+  } else {
+    navigation.navigate("LoginScreen");
   }
 }, [isuserLogin, navigation]);
 
   useEffect(() => {
   if (threadUuid) {
-    navigation.navigate("Chat");
+    navigation.navigate("ChatScreen");
   }
 }, [threadUuid, navigation]);
 

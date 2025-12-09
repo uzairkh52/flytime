@@ -1,9 +1,29 @@
 import { View, Text, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { mainStyle } from '../../assets/styles/component/mainStyle'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import HomeScreen from '../../Screens/HomeScreen'
+import { RootState } from '../../store/store'
+
 const SplashScreen = ({ data, handleSplesh, handleSkip }) => {
+
+    const {loginState} = useSelector((state: RootState) => state?.login);
+    console.log("loginUserState2", loginState);
+    const navigation = useNavigation();
+
+    useEffect(()=> {
+        if (loginState === true) {
+            Alert.alert("asas");
+            navigation.reset({
+                index:0,
+                routes:[{ name: "HomeScreen"}],
+            })
+        }
+    }, [loginState])
+    
 
 
     return (
@@ -15,6 +35,7 @@ const SplashScreen = ({ data, handleSplesh, handleSkip }) => {
                 mainStyle.whiteBg
             ]}>
                 <View >
+                    
                     <View style={[mainStyle.mb50]}>
                         <Text style={[mainStyle.h1, mainStyle.exbold, mainStyle.center, mainStyle.mb10]}>{data?.heading}</Text>
                         <Text style={[mainStyle.p, mainStyle.center]}>{data?.subHEading}</Text>

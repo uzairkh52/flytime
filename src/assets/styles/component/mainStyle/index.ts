@@ -109,10 +109,11 @@ export const mainStyle = StyleSheet.create({
     lineHeight: 25,
   },
   h1: {
-    fontFamily: variable.font.bold,
+    fontWeight:variable.bold,
     fontSize: variable.font.size24,
   },
   h2: {
+    fontWeight: variable.bold,
     fontFamily: variable.font.bold,
     fontSize: variable.font.size20,
     flexDirection: 'row',
@@ -120,18 +121,22 @@ export const mainStyle = StyleSheet.create({
 
   },
   h3: {
+    fontWeight: variable.bold,
     fontFamily: variable.font.medium,
     fontSize: variable.font.size20,
   },
   h4: {
+    fontWeight: variable.bold,
     fontFamily: variable.font.medium,
     fontSize: variable.font.size18,
   },
   h5: {
+    fontWeight: variable.bold,
     fontFamily: variable.font.regular,
     fontSize: variable.font.size16,
   },
   h6: {
+    fontWeight: variable.bold,
     fontFamily: variable.font.regular,
     fontSize: variable.font.size14,
   },
@@ -181,9 +186,9 @@ export const mainStyle = StyleSheet.create({
   // Sizes
 
   BtnX: {
-    paddingVertical: 9,
     paddingHorizontal: 40,
     fontSize: 12,
+    height:50,
   },
   Btnsm: {
     paddingVertical: 6,
@@ -284,7 +289,7 @@ export const mainStyle = StyleSheet.create({
   backgroundColor: "#fff",   // must be opaque
   padding: 12,
   borderRadius: 12,
-  height: 60,
+  height: 50,
   paddingHorizontal: 20,
 
   borderWidth:1,

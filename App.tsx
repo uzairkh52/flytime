@@ -30,21 +30,33 @@ export default function App() {
           <Stack.Screen
             name='SplashScreen1'
             component={SplashScreen1}
+            options={{
+              headerShown: false,
+            }}
           />
           <Stack.Screen
             name='SplashScreen2'
             component={SplashScreen2}
+            options={{
+              headerShown: false,
+            }}
           />
           <Stack.Screen
             name='SplashScreen3'
             component={SplashScreen3}
+            options={{
+              headerShown: false,
+            }}
           />
           <Stack.Screen
             name='SplashScreen4'
             component={SplashScreen4}
+            options={{
+              headerShown: false,
+            }}
           />
           <Stack.Screen
-              name="Home"
+              name="HomeScreen"
               component={HomeScreen}
               options={navigation => ({
                 title: 'Home',
@@ -57,20 +69,9 @@ export default function App() {
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
-              options={navigation => ({
-                title: 'Sign in',
-                // Remove headerRight so default back arrow appears
-                headerRight: () => <HeaderUser navigation={navigation} />,
-                //  headerTitle: () => (
-                //   <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                //     <Text
-                //       style={{ fontSize: 18, fontWeight: 'bold', color: 'black' }}
-                //     >
-                //       Mylz
-                //     </Text>
-                //   </TouchableOpacity>
-                // ),
-              })}
+              options={{
+                headerShown: false,
+              }}
             />
             <Stack.Screen
               name="FlightDetailScreen"
@@ -111,7 +112,7 @@ export default function App() {
               component={SignUpScreen}
             />
             <Stack.Screen
-              name="Chat"
+              name="ChatScreen"
               component={ChatScreen}
               options={({ navigation }) => ({
                 headerRight: () => <HeaderUser navigation={navigation} />,

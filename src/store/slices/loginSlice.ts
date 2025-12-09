@@ -25,7 +25,7 @@ const initialState: LoginState = {
   LoginPopup: false,
   LoginCloseDrawer: false,
   IsUser: null,
-  loginState: true,
+  loginState: false,
   emailError : null,
   passwordError: null,
 };
@@ -83,7 +83,7 @@ export const loginUser = (params: any) => async (dispatch: any) => {
         setLoginUser({ user: res.data, status: res.status })
       );
       dispatch(setLoginPopup(false));
-      dispatch(setLoginState(false));
+      dispatch(setLoginState(true));
       // dispatch(setMobileNaveDrawer(false));
 
       const { username, first_name, last_name, access, refresh } = res.data;
@@ -113,6 +113,8 @@ export const loginUser = (params: any) => async (dispatch: any) => {
 export const Logout = () => async (dispatch: any) => {
   try {
     const refreshToken = await AsyncStorage.getItem("refresh_token");
+    console.log("refreshToken", refreshToken);
+    
     if (refreshToken) {
       await api.post("/api/v1/logout/", { refresh: refreshToken });
     }
@@ -141,7 +143,7 @@ export const googleLoginUser = (code: string) => async (dispatch: any) => {
       const { user, access, refresh } = res.data;
 
       dispatch(setLoginUser({ user: res.data, status: res.status }));
-      dispatch(setLoginState(false));
+      dispatch(setLoginState(true));
       // dispatch(setMobileNaveDrawer(false));
       dispatch(setRegisterPopup(false));
 

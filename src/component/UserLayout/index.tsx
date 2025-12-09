@@ -1,117 +1,188 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
-  Alert,
   SafeAreaView,
+  ScrollView,
+  Alert,
 } from "react-native";
 import { styles } from "./../../assets/styles/SignUpStyles";
 import { mainStyle } from "../../assets/styles/component/mainStyle";
-import SignUpScreen from "../../Screens/Auth/SignUpScreen";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface UserLayoutProps {
-  navigation: any,      // ← add this
-  username: any,
-  setUsername: any,
-  password: any,
-  setPassword: any,
-  submit: any,
-  isFormValid: any,
-  isLoading: any,
-  emailError: any,
-  passwordError: any,
-  formType: any,
-  LoginError: any,
+  navigation: any;
+  username?: string;
+  setUsername?: any;
+  password?: string;
+  setPassword?: any;
+  firstName?: string;
+  setFirstName?: any;
+  lastName?: string;
+  setLastName?: any;
+  submit: any;
+  isFormValid?: any;
+  isLoading?: boolean;
+  emailError?: string;
+  passwordError?: string;
+  firstNameError?: string;
+  lastNameError?: string;
+  formType: "Login" | "SignUp";
+  LoginError?: any;
+  SignUpError?: any;
 }
-
 
 const UserLayout: React.FC<UserLayoutProps> = ({
   navigation,
   formType,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   username,
   setUsername,
   password,
   setPassword,
   submit,
   isFormValid,
+  isLoading,
   emailError,
   passwordError,
-  isLoading,
-  LoginError
+  firstNameError,
+  lastNameError,
+  LoginError,
+  SignUpError,
 }) => {
-    console.log("LoginError1111", formType);
-    
-
+  
+  const {loginState} = useSelector((state: RootState) => state?.login);
+  useEffect(()=> {
+      if (loginState === true) {
+          navigation.reset({
+              index:0,
+              routes:[{ name: "HomeScreen"}],
+          })
+      }
+  }, [loginState]);
   return (
-    <>
-      <SafeAreaView style={[ mainStyle.justifyContentStart, mainStyle.Basecolor1Bg, mainStyle.flex1]}>
-        <View style={[mainStyle.container,, styles.Header]}>
-          <Text style={[mainStyle.h1, mainStyle.white]} >Welcome Back!</Text>
-          <Text style={mainStyle.p, mainStyle.white} >Log in to continue your personalized travel journey and access your itineraries and recommendations anytime.</Text>
+    <SafeAreaView style={[mainStyle.Basecolor1Bg, styles.main]}>
+      <ScrollView
+        style={[styles.mainScrollSection]}
+        
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Header */}
+        <View style={[mainStyle.container, styles.Header]}>
+          <Text style={[mainStyle.h1, mainStyle.white]}>
+            {formType === "Login" ? "Welcome Back!" : "Create an Account"}
+          </Text>
+          <Text style={[mainStyle.p, mainStyle.white]}>
+            {formType === "Login"
+              ? "Log in to continue your personalized travel journey and access your itineraries and recommendations anytime."
+              : "Sign up to start your personalized travel journey and access your itineraries and recommendations anytime."}
+          </Text>
         </View>
-        <View style={[mainStyle.container, styles.Body, mainStyle.flex1]}>
-            {formType ? (
-             <>
-                {/* Email */}
-                <View style={[mainStyle.formGroup]}>
-                    <TextInput
-                        style={mainStyle.formControl}
-                        placeholder="Enter Email"
-                        keyboardType="email-address"
-                        value={username}
-                        onChangeText={setUsername}
-                    />
-                    {emailError !== "" && <Text style={styles.error}>{emailError}</Text>}
 
-                </View>
-                <View style={[mainStyle.formGroup]}>
-                    {/* Password */}
-                    <TextInput
-                        style={mainStyle.formControl}
-                        placeholder="Enter Password"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
-                    />
-                    {passwordError !== "" && <Text style={styles.error}>{passwordError}</Text>}
-                </View>
-                
-                <Text style={styles.error}>{LoginError?.other}</Text>
-                {/* Submit Button */}
-                <TouchableOpacity
-                    disabled={!isFormValid || isLoading}
-                    onPress={submit}
-                    style={[mainStyle.Btn, mainStyle.BtnPrimary, mainStyle.Btnlg]}
+        {/* Form */}
+        <View style={[mainStyle.container, styles.Body]}>
+          {formType === "SignUp" && (
+            <>
+              {/* First Name */}
+              <View style={mainStyle.formGroup}>
+                <TextInput
+                  style={mainStyle.formControl}
+                  placeholder="Enter First Name"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+                {firstNameError && <Text style={styles.error}>{firstNameError}</Text>}
+              </View>
+
+              {/* Last Name */}
+              <View style={mainStyle.formGroup}>
+                <TextInput
+                  style={mainStyle.formControl}
+                  placeholder="Enter Last Name"
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+                {lastNameError && <Text style={styles.error}>{lastNameError}</Text>}
+              </View>
+            </>
+          )}
+
+          {/* Email */}
+          <View style={mainStyle.formGroup}>
+            <TextInput
+              style={mainStyle.formControl}
+              placeholder="Enter Email"
+              keyboardType="email-address"
+              value={username}
+              onChangeText={setUsername}
+            />
+            {emailError && <Text style={styles.error}>{emailError}</Text>}
+          </View>
+
+          {/* Password */}
+          <View style={mainStyle.formGroup}>
+            <TextInput
+              style={mainStyle.formControl}
+              placeholder="Enter Password"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            {passwordError && <Text style={styles.error}>{passwordError}</Text>}
+          </View>
+
+          {/* Error */}
+          <Text style={styles.error}>{LoginError?.other || SignUpError?.other}</Text>
+
+          {/* Submit */}
+          <TouchableOpacity
+            // disabled={!isFormValid || isLoading}
+            onPress={submit}
+            style={[mainStyle.Btn, mainStyle.BtnPrimary, mainStyle.Btnlg]}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={mainStyle.BtnPrimaryText}>
+                {formType === "Login" ? "Login" : "Continue"}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Navigate */}
+          <View style={mainStyle.py10}>
+            {formType === "Login" ? (
+              <Text>
+                Don't have an account?{" "}
+                <Text
+                  style={mainStyle.Basecolor1}
+                  onPress={() => navigation.navigate("SignUpScreen")}
                 >
-                    {isLoading ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <Text style={mainStyle.BtnPrimaryText}>Login</Text>
-                    )}
-                </TouchableOpacity>
-                
-                {/* Navigate to Signup */}
-                <View style={[mainStyle.py10]}>
-                    <Text>
-                        Don't have an account?{" "}
-                        <Text
-                            style={mainStyle.Basecolor1}
-                            onPress={() => navigation.navigate("SignUpScreen")}
-                        >
-                            Sign Up
-                        </Text>
-                    </Text>
-                </View>
-             </>   
-            ): ""}
+                  Sign Up
+                </Text>
+              </Text>
+            ) : (
+              <Text>
+                Already have an account?{" "}
+                <Text
+                  style={mainStyle.Basecolor1}
+                  onPress={() => navigation.navigate("LoginScreen")}
+                >
+                  Log in
+                </Text>
+              </Text>
+            )}
+          </View>
         </View>
-      </SafeAreaView>
-    </>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

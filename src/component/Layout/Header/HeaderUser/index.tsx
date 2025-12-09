@@ -20,6 +20,7 @@ import { setIsSignupUser } from "../../../../store/slices/signupSlice";
 import { RootState } from "../../../../store/store";
 import HeaderUtils from "../../../../utils/HeaderUtils";
 import { useNavigation } from "@react-navigation/native";
+import LoginScreen from "../../../../Screens/Auth/LoginScreen";
 
 interface HeaderUserProps {
   navigation: any;
@@ -42,14 +43,13 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
   
 
   // Load user from AsyncStorage on mount
+  
+
   useEffect(() => {
     const loadUser = async () => {
       const userString = await AsyncStorage.getItem("set-user");
       const access_token = await AsyncStorage.getItem("access_token");
       const refresh_token = await AsyncStorage.getItem("refresh_token");
-      console.log("userString", userString);
-      
-      
 
       if (!userString || !access_token || !refresh_token) {
         await AsyncStorage.multiRemove([
@@ -57,10 +57,13 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
           "access_token",
           "refresh_token",
         ]);
+
+        dispatch(setLoginState(false));
         return;
       }
 
       const user = JSON.parse(userString);
+
       dispatch(
         setIsSignupUser({
           user,
@@ -69,6 +72,7 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
           status: 200,
         })
       );
+
       dispatch(
         setLoginUser({
           user,
@@ -77,11 +81,14 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
           status: 200,
         })
       );
-      dispatch(setLoginState(false));
+
+      dispatch(setLoginState(true));  //
+      Alert.alert("1111")
     };
 
     loadUser();
-  }, [dispatch]);
+  }, []);
+
 
   const handleLogout = async () => {
     await dispatch(Logout());
@@ -93,6 +100,18 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
     Alert.alert("asas")
   };
 
+  const { loginState } = useSelector((state: RootState) => state.login);
+  console.log("loginState_home", loginState);
+  
+    // useEffect(()=> {
+    //     if (loginState === false) {
+    //         Alert.alert("asas");
+    //         navigation.reset({
+    //             index:0,
+    //             routes:[{ name: "LoginScreen"}],
+    //         })
+    //     }
+    // }, [loginState]);
   return (
     <View style={styles.container}>
       <HeaderUtils />
@@ -110,7 +129,7 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
       ) : (
         <TouchableOpacity
           style={styles.loginBox}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate("LoginScreen")}
         >
           
           <Text style={styles.loginText}>Sign In</Text>
