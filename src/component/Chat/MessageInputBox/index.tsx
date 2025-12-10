@@ -10,6 +10,8 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+
+
 import { useDispatch, useSelector } from "react-redux";
 
 
@@ -22,6 +24,15 @@ import axios from "axios";
 import { Button, Icon } from "react-native-paper";
 import { mainStyle } from "../../../assets/styles/component/mainStyle";
 import { homeStyle } from "../../../assets/styles/component/homeStyle";
+
+
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+
+
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
+
 
 interface MessageInputBoxProps {
   isMessageHome?: any;
@@ -94,10 +105,13 @@ const MessageInputBox = ({
         />
 
         <TouchableOpacity style={[mainStyle.Btn, mainStyle.BtnPrimary, mainStyle.BtnX]}>
-          <Icon name="arrow-forward-ios" size={22} color="#000" />
-
+            <FontAwesome5 name="arrow-right" size={20} style={mainStyle.white} />
         </TouchableOpacity>
-      </View>
+              
+      {/* <AntDesign name="search1" size={40} color="green" />
+        <IconButton icon="rocket" size={30} /> */}
+
+    </View>
 
       {/* Optional: Mobile Builder */}
 
