@@ -7,27 +7,29 @@ import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import HomeScreen from '../../Screens/HomeScreen'
 import { RootState } from '../../store/store'
+import ThreadWatcher from '../../utils/HeaderUtils'
 
 const SplashScreen = ({ data, handleSplesh, handleSkip }) => {
 
     const {loginState} = useSelector((state: RootState) => state?.login);
-    console.log("loginUserState2", loginState);
+    const isLogin = useSelector((state: RootState) => state);
     const navigation = useNavigation();
+    console.log("loginState_001", isLogin)
 
-    useEffect(()=> {
+    useEffect(() => {
         if (loginState === true) {
-            Alert.alert("asas");
             navigation.reset({
-                index:0,
-                routes:[{ name: "HomeScreen"}],
+                index: 0,
+                routes: [{ name: "HomeScreen" }],
             })
         }
-    }, [loginState])
+    }, [loginState]);
     
 
 
     return (
         <>
+            <ThreadWatcher />
             <SafeAreaView style={[
                 mainStyle.container,
                 mainStyle.flex1,

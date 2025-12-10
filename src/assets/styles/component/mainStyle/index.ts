@@ -54,6 +54,7 @@ export const mainStyle = StyleSheet.create({
   // Other colors
   darkgray: { color: variable.darkgray },
   lightgray: { color: variable.lightgray },
+  lightgrayBg: { backgroundColor: variable.lightgray },
   black: { color: variable.black },
   white: { color: variable.white },
   red: { color: variable.red },
@@ -61,6 +62,9 @@ export const mainStyle = StyleSheet.create({
   cyan: { color: variable.cyan },
   container: {
     paddingHorizontal: 15,
+  },
+  Capitalize: {
+    textTransform:"capitalize",
   },
 
   hr: {

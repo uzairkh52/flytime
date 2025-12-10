@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './src/store/store';
 import HomeScreen from './src/Screens/HomeScreen';
 import HeaderUser from './src/component/Layout/Header/HeaderUser';
+import HeaderLeftUser from './src/component/Layout/Header/HeaderLeft';
 import LoginScreen from './src/Screens/Auth/LoginScreen';
 import FlightDetailScreen from './src/Screens/FlightDetailScreen';
 import PassengerFormScreen from './src/Screens/PassengerFormScreen';
@@ -56,20 +57,36 @@ export default function App() {
             }}
           />
           <Stack.Screen
-              name="HomeScreen"
-              component={HomeScreen}
-              options={navigation => ({
-                title: 'Home',
-                headerRight: () => <HeaderUser navigation={navigation} />,
+  name="HomeScreen"
+  component={HomeScreen}
+  options={{
+    headerShown: true,        // keep header so HeaderUser works
+    headerTitle: "",          // hide title
+    headerTransparent: true,  // remove background
+    headerShadowVisible: false, // remove shadow (Android + iOS)
+    headerStyle: {
+      backgroundColor: "transparent", // transparent background
+      elevation: 0,  // remove Android shadow
+      shadowOpacity: 0, // remove iOS shadow
+    },
+    headerRight: () => <HeaderUser />,
+    headerLeft: () => <HeaderLeftUser />,
+  }}
+/>
 
-                // Remove headerRight (it hides back arrow)
-              })}
-            />
 
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
               options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="SignUpScreen"
+              component={SignUpScreen}
+              options={{
+                // Remove headerRight so default back arrow appears
                 headerShown: false,
               }}
             />
@@ -101,21 +118,12 @@ export default function App() {
                   title:"PaymentScreen",
                 }}
              />
-            <Stack.Screen
-              name="SignUpScreen"
-              options={({ navigation }) => ({
-                title: 'Sign in',
-                // Remove headerRight so default back arrow appears
-                headerBackVisible: true,
-                headerRight: () => <HeaderUser navigation={navigation} />,
-              })}
-              component={SignUpScreen}
-            />
+            
             <Stack.Screen
               name="ChatScreen"
               component={ChatScreen}
               options={({ navigation }) => ({
-                headerRight: () => <HeaderUser navigation={navigation} />,
+                headerRight: () => <HeaderUser />,
 
                 headerTitle: () => (
                   <TouchableOpacity onPress={() => navigation.navigate('Home')}>

@@ -15,7 +15,8 @@ interface LoginState {
   IsUser: any;
   loginState: boolean;
   emailError : any,
-  passwordError: any
+  passwordError: any;
+  LogoutUser: any;
 }
 
 const initialState: LoginState = {
@@ -28,6 +29,7 @@ const initialState: LoginState = {
   loginState: false,
   emailError : null,
   passwordError: null,
+  LogoutUser: null,
 };
 
 const loginSlice = createSlice({
@@ -53,6 +55,7 @@ const loginSlice = createSlice({
     setLogoutUser: (state) => {
       state.loginUser = null;
       state.IsUser = null;
+      state.LogoutUser = null;
     },
     setEmailError: (state, action)=> {
       state.emailError = action.payload
@@ -116,14 +119,17 @@ export const Logout = () => async (dispatch: any) => {
     console.log("refreshToken", refreshToken);
     
     if (refreshToken) {
-      await api.post("/api/v1/logout/", { refresh: refreshToken });
+      const res = await api.post("/api/v1/logout/", { refresh: refreshToken });
+      console.log("logout_res", res);
     }
   } catch (err) {
     console.error("Logout failed:", err);
   } finally {
+    console.log("logout_res_finally");
     dispatch(setLogoutUser());
     // dispatch(setCurrentUser(null));
     dispatch(setIsSignupUser(null));
+    dispatch(setLoginState(false));
     // dispatch(setMobileNaveDrawer(false));
     await AsyncStorage.multiRemove([
       "access_token",

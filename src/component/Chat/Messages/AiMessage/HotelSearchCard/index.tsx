@@ -63,12 +63,8 @@ const HotelCard = ({
           <View style={HotelCardStyle.rightContent}>
             <Text style={mainStyle.h2}>{hotel?.name}</Text>
             <Text style={mainStyle.size10}>
-              {/* <MaterialDesignIcons
-                name="map-marker"
-                
-                style={[mainStyle.size10, mainStyle.black50]}
-                
-              /> */}
+              <MaterialCommunityIcons name="map-marker" size={24} color="#000" />
+
               {location}
               {hotel?.zoneName ? `, ${hotel.zoneName}` : ''}
             </Text>

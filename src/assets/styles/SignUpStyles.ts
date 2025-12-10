@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   Body: {
-    borderWidth:3,
+    
     backgroundColor:variable.white,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30, // if you want top-left too

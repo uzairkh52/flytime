@@ -13,6 +13,8 @@ import { styles } from "./../../assets/styles/SignUpStyles";
 import { mainStyle } from "../../assets/styles/component/mainStyle";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import HeaderUser from "../Layout/Header/HeaderUser";
+import ThreadWatcher from "../../utils/HeaderUtils";
 
 interface UserLayoutProps {
   navigation: any;
@@ -58,19 +60,12 @@ const UserLayout: React.FC<UserLayoutProps> = ({
   SignUpError,
 }) => {
   
-  const {loginState} = useSelector((state: RootState) => state?.login);
-  useEffect(()=> {
-      if (loginState === true) {
-          navigation.reset({
-              index:0,
-              routes:[{ name: "HomeScreen"}],
-          })
-      }
-  }, [loginState]);
+  
   return (
+    <>
+    <ThreadWatcher />
     <SafeAreaView style={[mainStyle.Basecolor1Bg, styles.main]}>
       <ScrollView
-        style={[styles.mainScrollSection]}
         
         keyboardShouldPersistTaps="handled"
       >
@@ -183,6 +178,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({
         </View>
       </ScrollView>
     </SafeAreaView>
+    </>
   );
 };
 

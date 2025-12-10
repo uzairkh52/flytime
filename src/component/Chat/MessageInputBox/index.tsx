@@ -19,8 +19,9 @@ import MicAnimationApp from "../MicAnimation";
 import { deleteAndCreateThread, sendMessage } from "../../../store/slices/sendMessageSlice";
 import { clearInputValue, setInputValue } from "../../../store/slices/baseSlice";
 import axios from "axios";
-import { Button } from "react-native-paper";
+import { Button, Icon } from "react-native-paper";
 import { mainStyle } from "../../../assets/styles/component/mainStyle";
+import { homeStyle } from "../../../assets/styles/component/homeStyle";
 
 interface MessageInputBoxProps {
   isMessageHome?: any;
@@ -49,8 +50,8 @@ const MessageInputBox = ({
   const isLoading = useSelector((state: any) => state.sendMessage?.isLoading);
 
   const inputRef = useRef<TextInput>(null);
-  
-  
+
+
   const handleSend = async () => {
     if (!inputValue.trim()) return;
     dispatch(sendMessage(inputValue));
@@ -70,13 +71,18 @@ const MessageInputBox = ({
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={[styles.container, isSticky && styles.sticky]}
     >
-      
-      <View style={styles.inputRow}>
+
+      <View style={homeStyle.formGroup}>
         {/* Text input */}
+        {!isTyping && (
+          <Text style={[homeStyle.label, mainStyle.white]}>
+            Ask Mylz to plan your trip
+          </Text>
+        )}
         <TextInput
           ref={inputRef}
-          style={styles.input}
-          placeholder={isChat ? "Ask Mylz..." : "Start typing..."}
+          style={homeStyle.formControl}
+
           value={inputValue}
           onChangeText={(text) => {
             dispatch(setInputValue(text));
@@ -87,15 +93,14 @@ const MessageInputBox = ({
           returnKeyType="send"
         />
 
-      </View>
-      <View style={styles.inputRow}>
         <TouchableOpacity style={[mainStyle.Btn, mainStyle.BtnPrimary, mainStyle.BtnX]}>
-          <Text style={mainStyle.white}>asas</Text>
+          <Icon name="arrow-forward-ios" size={22} color="#000" />
+
         </TouchableOpacity>
       </View>
 
       {/* Optional: Mobile Builder */}
-      
+
     </KeyboardAvoidingView>
   );
 };
@@ -103,58 +108,5 @@ const MessageInputBox = ({
 export default MessageInputBox;
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    padding: 10,
-    backgroundColor: "#fff",
-  },
-  sticky: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    width:"100%"
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 25,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    fontSize: 16,
-  },
-  micBtn: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "#ddd",
-  },
-  sendBtn: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "#007bff",
-    marginLeft: 4,
-  },
-  sendText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  newThreadBtn: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "#007bff",
-    marginRight: 4,
-  },
-  newThreadText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
+
 });

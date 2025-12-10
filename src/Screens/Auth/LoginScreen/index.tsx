@@ -76,7 +76,7 @@ const LoginScreen = () => {
     <>
       <UserLayout
         navigation={navigation}   // ← add this
-        formType="Login"
+        formType={"Login"}
         username={username}
         setUsername={setUsername}
         password={password}
