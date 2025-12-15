@@ -81,6 +81,12 @@ export const mainStyle = StyleSheet.create({
   right: {
     textAlign: 'right'
   },
+  pb20: {
+    paddingBottom: 20,
+  },
+  mb0: {
+    marginBottom:0,
+  },
   mb20: {
     marginBottom: 20,
   },
@@ -94,6 +100,7 @@ export const mainStyle = StyleSheet.create({
   // Font Families
   regular: { fontFamily: variable.font.regular },
   medium: { fontFamily: variable.font.medium },
+  bold: { fontWeight: "600"},
   exbold: { fontWeight: "700", },
 
   // Base Sizes
@@ -113,39 +120,40 @@ export const mainStyle = StyleSheet.create({
     lineHeight: 25,
   },
   h1: {
-    fontWeight:variable.bold,
+    marginBottom: 15,
+    fontWeight:600,
     fontSize: variable.font.size24,
   },
   h2: {
-    fontWeight: variable.bold,
-    fontFamily: variable.font.bold,
+    marginBottom: 15,
+    fontWeight: 600,
     fontSize: variable.font.size20,
     flexDirection: 'row',
     flexWrap: 'wrap',
-
   },
   h3: {
-    fontWeight: variable.bold,
+    marginBottom: 15,
+    fontWeight: 600,
     fontFamily: variable.font.medium,
     fontSize: variable.font.size20,
   },
   h4: {
-    fontWeight: variable.bold,
+    marginBottom: 15,
+    fontWeight: 600,
     fontFamily: variable.font.medium,
     fontSize: variable.font.size18,
   },
   h5: {
-    fontWeight: variable.bold,
-    fontFamily: variable.font.regular,
+    marginBottom: 15,
+    fontWeight: 600,
     fontSize: variable.font.size16,
   },
   h6: {
-    fontWeight: variable.bold,
+    marginBottom: 15,
+    fontWeight: 600,
     fontFamily: variable.font.regular,
     fontSize: variable.font.size14,
   },
-
-
   paragraph: {
     lineHeight: 25,
     fontFamily: variable.secondaryFont,
@@ -171,7 +179,12 @@ export const mainStyle = StyleSheet.create({
   Row: { borderWidth: 1 },
   w100: { width: "100%" },
 
-  // Buttons
+  btnBasecolorLight: {
+    height: 24,
+    backgroundColor: "rgba(248, 99, 65, 0.1)",
+    borderRadius: 4,
+  },
+
   BtnSeeDetail: {
     color: variable.basecolor1,
     alignItems: "center",
@@ -194,8 +207,13 @@ export const mainStyle = StyleSheet.create({
     fontSize: 12,
     height:50,
   },
+  BtnSmText: {
+    fontWeight: "500",
+    fontSize: 16,
+    textAlign: "center",
+  },
   Btnsm: {
-    paddingVertical: 6,
+    paddingVertical: 5,
     paddingHorizontal: 20,
     fontSize: 12,
   },
@@ -278,13 +296,18 @@ export const mainStyle = StyleSheet.create({
     color: variable.white
   },
   BtnBorderText: {
-    fontWeight: "400",
-    fontSize: 18,
+    fontSize: 15,
     textAlign: "center",
     color: variable.basecolor1
   },
   py10 : {
     paddingVertical:10,
+  },
+  py20 : {
+    paddingVertical:20,
+  },
+  py30 : {
+    paddingVertical:30,
   },
   formGroup: {
     marginBottom:15,
@@ -301,7 +324,17 @@ export const mainStyle = StyleSheet.create({
 },
 
 
+// grid
+row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 15,
+  },
 
+  col: {
+    flex: 1,
+    alignItems: "center",
+  },
 
 
 });

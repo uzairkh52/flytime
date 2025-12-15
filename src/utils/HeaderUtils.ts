@@ -13,6 +13,9 @@ import { RootState } from "../store/store";
 const ThreadWatcher = () => {
   const navigation = useNavigation();
   const threadUuid = useSelector((state: any) => state?.sendMessage?.threadUuid);
+
+  console.log("get_threadUuid", threadUuid);
+  
   const route = useRoute();
   const dispatch = useDispatch();
 
@@ -20,10 +23,10 @@ const ThreadWatcher = () => {
   const isuserLogin = useSelector(
     (state: RootState) => state?.login?.loginUser
   );
-  console.log("isuserLogin2", isuserLogin);
   const { loginState } = useSelector((state: RootState) => state?.login);
-
+  
   console.log("Current_Screen:", route.name === "LoginScreen");
+  console.log("isuserLogin2", loginState);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -31,7 +34,7 @@ const ThreadWatcher = () => {
       const access_token = await AsyncStorage.getItem("access_token");
       const refresh_token = await AsyncStorage.getItem("refresh_token");
 
-      if (!userString || !access_token || !refresh_token) {
+      if (!userString) {
         await AsyncStorage.multiRemove([
           "set-user",
           "access_token",
@@ -69,24 +72,30 @@ const ThreadWatcher = () => {
   }, []);
 
   useEffect(() => {
-    if (route.name === "LoginScreen") {
-      if (loginState === true) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "HomeScreen" }],
-        });
-      }
-    }
-  }, [loginState, route.name]);
+  if (route.name === "LoginScreen" && loginState === true) {
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "MainTabs",
+          params: {
+            screen: "HomeTab",
+          },
+        },
+      ],
+    });
+  }
+}, [loginState, route.name]);
+
 
 
   
 
   useEffect(() => {
     if (threadUuid) {
-      navigation.navigate("ChatScreen");
+        navigation.navigate("ChatScreen", { threadUuid });
     }
-  }, [threadUuid, navigation]);
+  }, [threadUuid, navigation, dispatch]);
 
   return null; // Does not render anything
 };

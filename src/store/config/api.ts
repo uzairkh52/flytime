@@ -1,13 +1,13 @@
+// src/api/api.ts
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL } from "./config"; //
-
+import { BASE_URL } from "./config";
 import { isTokenExpired } from "../../utils/isTokenExpired";
 import { Logout } from "../slices/loginSlice";
 import { store } from "../store";
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL, // "https://demo.milesfactory.com"
   timeout: 15000,
 });
 
@@ -22,68 +22,73 @@ const processQueue = (error: any, token: string | null = null) => {
       promise.resolve(token);
     }
   });
-
   failedQueue = [];
 };
 
-// ----------------------- REQUEST INTERCEPTOR -----------------------
-api.interceptors.request.use(async (config) => {
+const REFRESH_URL = "/api/v1/refresh/"; // ✅ fixed URL
+
+api.interceptors.request.use(async (config: any) => {
+  // Skip auth endpoints
+  const skipUrls = ["/login/", "/logout/", REFRESH_URL];
+  if (skipUrls.some((url) => config.url?.includes(url))) {
+    return config;
+  }
+
   const accessToken = await AsyncStorage.getItem("access_token");
   const refreshToken = await AsyncStorage.getItem("refresh_token");
 
-  // Access token valid → set Authorization header
   if (accessToken && !isTokenExpired(accessToken)) {
     config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   }
 
-  // Access token expired → refresh process
   if (accessToken && isTokenExpired(accessToken)) {
     if (!refreshToken) {
       await AsyncStorage.multiRemove(["access_token", "refresh_token"]);
       store.dispatch(Logout());
-      return Promise.reject("No refresh token found");
+      return Promise.reject("No refresh token");
     }
 
     if (!isRefreshing) {
       isRefreshing = true;
 
       try {
-        const response = await axios.post(
-          `${BASE_URL}/v1/refresh/`,
-          { refresh: refreshToken }
-        );
+        const res = await axios.post(`${BASE_URL}${REFRESH_URL}`, {
+          refresh: refreshToken,
+        });
 
-        const newAccessToken = response.data.access;
-        const newRefreshToken = response.data.refresh;
+        const newAccessToken = res.data.access;
+        const newRefreshToken = res.data.refresh;
 
         await AsyncStorage.setItem("access_token", newAccessToken);
-        if (newRefreshToken)
+        if (newRefreshToken) {
           await AsyncStorage.setItem("refresh_token", newRefreshToken);
+        }
 
         isRefreshing = false;
         processQueue(null, newAccessToken);
 
         config.headers.Authorization = `Bearer ${newAccessToken}`;
-        return config;
+        return api(config); // 🔥 retry original request
 
-      } catch (error) {
-        await AsyncStorage.multiRemove(["access_token", "refresh_token"]);
-
+      } catch (error: any) {
         isRefreshing = false;
         processQueue(error, null);
 
-        store.dispatch(Logout());
+        if (error?.response?.status === 401) {
+          await AsyncStorage.multiRemove(["access_token", "refresh_token"]);
+          store.dispatch(Logout());
+        }
+
         return Promise.reject(error);
       }
     }
 
-    // Queue requests during refresh
     return new Promise((resolve, reject) => {
       failedQueue.push({
         resolve: (token: string) => {
           config.headers.Authorization = `Bearer ${token}`;
-          resolve(config);
+          resolve(api(config)); // retry request after refresh
         },
         reject,
       });
@@ -93,7 +98,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// ----------------------- RESPONSE INTERCEPTOR -----------------------
 api.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(error)

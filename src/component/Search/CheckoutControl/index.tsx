@@ -79,16 +79,7 @@ const CheckoutControl = () => {
 };
 
 const styles = StyleSheet.create({
-  row: {
-    position:"absolute",
-    top:0,
-    left:0,
-    width:"100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-
+  
   innerBox: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,14 +1,21 @@
 // src/utils/isTokenExpired.ts
+
+import { jwtDecode } from "jwt-decode";
+
+
+interface JwtPayload {
+  exp: number;
+}
+
 export const isTokenExpired = (token: string): boolean => {
+  if (!token) return true;
+
   try {
-    const payload = token.split(".")[1];
-    const decoded = JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
-
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    return decoded.exp < currentTime;
-  } catch (e) {
-    console.log("❌ JWT decode failed:", e);
-    return true; // If anything fails → treat as expired
+    const decoded = jwtDecode<JwtPayload>(token);
+    if (!decoded.exp) return true;
+    return Date.now() >= decoded.exp * 1000;
+  } catch (error) {
+    console.log("JWT decode failed", error);
+    return true;
   }
 };

@@ -85,9 +85,9 @@ const HeaderUser: React.FC<HeaderUserProps> = ({  }) => {
           <Text style={mainStyle.Basecolor}>
             {currentUser.last_name || ""}
           </Text>
-          {/* <TouchableOpacity onPress={handleLogout} style={headerStyle.logoutBtn}>
+          <TouchableOpacity onPress={handleLogout} style={headerStyle.logoutBtn}>
             <Text style={headerStyle.logoutText}>Sign Out</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
       ) : (
         <TouchableOpacity

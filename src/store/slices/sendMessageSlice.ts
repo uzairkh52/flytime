@@ -1,41 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import {
-  setflightDetail,
-  setSelectedFlightKey,
-  setSingleFlightData,
-  bookFlight,
-  setCartType,
-  setGetCartDetail,
-  resetBookingState,
-} from './BookingflightSlice';
-import {
-  resetPassengerFlightState,
-  setAddFilledPassenger,
-  setAllPassengerFill,
-  setOrderUuid,
-  setViewPassengers,
-} from './passengerDrawerSlice';
-import {
-  clearGetMessages,
-  fetchMessages,
-  setSearchHistoryGet,
-} from './GestMessageSlice';
-import {
-  setIsBuilderDialog,
-  setMobileNaveDrawer,
-  setThreadDrawer,
-} from './Base/baseSlice';
+
 import { resetOrderState, setOrderData } from './PaymentSlice';
-import {
-  resetPassengerHotelState,
-  setOrderUuidHotel,
-} from './passengerDrawerHotelSlice';
-import { resetBaggageState } from './BaggageSlice';
-import { resetHotelState, setSelectedhotelCode } from './HotelSlice';
+
+
+
 import api from '../config/api';
 import { API_ENDPOINTS } from '../config/apiEndpoints';
 import axios from 'axios';
+import { resetPassengerFlightState, setAddFilledPassenger, setAllPassengerFill, setOrderUuid, setViewPassengers } from './passengerFlightSlice';
+import { setCartType, setflightDetail, setGetCartDetail, setSelectedFlightKey } from './BookingflightSlice';
+import { resetBaggageState } from './baggageSlice';
 
 const sendMessageSlice = createSlice({
   name: 'sendMessage',
@@ -182,196 +157,218 @@ const sendMessageSlice = createSlice({
 
 
 export const sendMessage = (userMessage: any) => async (dispatch, getState) => {
+    dispatch(setLoading(true));
   try {
     const { sendMessage: messageState } = getState();
     let uuid = messageState.threadUuid;
 
-    // -----------------------------
-    // 1. Create thread only ONCE
-    // -----------------------------
-    if (!uuid) {
-      const threadRes = await api.post(API_ENDPOINTS.CHAT.CREATE_THREAD_SEND);
-      uuid = threadRes.data?.uuid;
-      dispatch(setThreadUuid(uuid));
-      console.log("Thread CREATED:", uuid);
-    } else {
-      console.log("Reusing EXISTING thread:", uuid);
-    }
+    console.log("sendMessageApi", userMessage);
+    console.log("messageState UUID:", uuid);
 
-    // -----------------------------
-    // 2. Dispatch user message
-    // -----------------------------
+    // add user message immediately
     dispatch(setMessage({ user: userMessage }));
-
-    // -----------------------------
-    // 3. Send user message to thread
-    // -----------------------------
-    const sendUrl = `${API_ENDPOINTS.CHAT.SEND_MESSAGE}/${uuid}`;
     dispatch(setLoading(true));
 
-    const res = await api.post(sendUrl, {
-      user_message: userMessage,
-      background_job: false,
-    });
+    // -------------------------------------------------
+    // Create Thread (used only if threadUuid = null)
+    // -------------------------------------------------
+    const createThread = () =>
+      console.log("api_url_",API_ENDPOINTS.CHAT.CREATE_THREAD_SEND);
+      
+      api.post(API_ENDPOINTS.CHAT.CREATE_THREAD_SEND)
+        .then((res) => {
+          const newUuid = res?.data?.uuid;
+          dispatch(setThreadUuid(newUuid));
+          console.log("Thread CREATED:", newUuid);
+          return newUuid;
+        }).catch((err) => {
+          console.log("message_err", err)
+        })
 
-    const data = res.data;
+    // -------------------------------------------------
+    // Send Message to Existing Thread
+    // -------------------------------------------------
+    const sendToThread = (uuid: string) => {
+      const sendUrl = `${API_ENDPOINTS.CHAT.SEND_MESSAGE}/${uuid}`;
 
-    // -----------------------------
-    // 4. Dispatch AI response
-    // -----------------------------
-    if (data) {
-      const aiResponse = data?.response || data;
-      console.log("aiResponse", aiResponse);
+      return api.post(sendUrl, {
+        user_message: userMessage,
+        background_job: false,
+      })
+        .then((res) => {
+          const data = res.data;
+          console.log("AI Response Raw:", data);
 
-      if (!data?.is_function) {
-        dispatch(setMessage({ ai: { message: aiResponse } }));
-      }
-
-      // -----------------------------
-      // 5. Handle function calls (flight/hotel flows)
-      // -----------------------------
-      if (data?.is_function) {
-        const funcName = data?.function_template?.[0]?.function?.name || null;
-        dispatch(setFunctionType(funcName));
-        dispatch(setIsFunction({ status: true }));
-
-        // ---- Flight flow ----
-        const allFlightSearchApi = data?.response?.results?.view_all_flight_result_api?.url;
-        const allFlightSearchUuid = data?.response?.results?.view_all_flight_result_api?.uuid;
-        console.log("data__results", data?.response?.results);
-        
-
-        if (allFlightSearchApi) {
-          dispatch(setAllOfferUUIDSend(allFlightSearchUuid));
-          dispatch(setAllOfferUrl(allFlightSearchApi));
-          dispatch(setFilterUrl(allFlightSearchApi));
-
-          const historyUrl = `/api/v1/search/${allFlightSearchUuid}/history`;
-
-          try {
-            const [historyRes, flightRes] = await Promise.all([
-              api.get(historyUrl).catch(() => null),
-              api.get(allFlightSearchApi).catch(() => null),
-            ]);
-
-            if (historyRes?.data?.search) {
-              dispatch(setSearchHistorySend({ flight: historyRes.data.search }));
-            }
-
-            if (flightRes?.data) {
-              const flightData = flightRes.data;
-              if (!flightData?.offers || flightData?.offers.length === 0) {
-                dispatch(setMessage({ ai: { response: "No flights found" } }));
-              } else {
-                dispatch(
-                  setMessage({
-                    ai: {
-                      ...flightData,
-                      url: allFlightSearchApi,
-                      response: data.response,
-                      append: true,
-                    },
-                    type: "flight_result",
-                  })
-                );
-              }
-            }
-          } finally {
-            dispatch(setLoading(false));
+          // ---------------------------
+          // NORMAL TEXT AI RESPONSE
+          // ---------------------------
+          if (!data?.is_function) {
+            dispatch(setMessage({ ai: { message: data?.response || data } }));
           }
-        }
 
-        // ---- Hotel flow ----
-        const hotelSearchApi = data?.response?.results?.view_hotel_search_api?.url;
-        const hotelSearchUuid = data?.response?.results?.view_hotel_search_api?.uuid;
-        const hotelArguments = data?.silent_function_template?.[0]?.function?.arguments || {};
+          // -------------------------------------------------
+          // FUNCTION START
+          // -------------------------------------------------
+          dispatch(setLoading(false));
+          if (data?.is_function) {
+            const funcName =
+              data?.function_template?.[0]?.function?.name || null;
 
-        if (hotelSearchApi) {
-          dispatch(setHotelSearchId(hotelSearchUuid));
-          dispatch(setSearchHistorySend({ hotel: hotelArguments }));
-          dispatch(setLoading(true));
+            dispatch(setFunctionType(funcName));
+            dispatch(setIsFunction({ status: true }));
 
-          try {
-            const hotelRes = await api.get(hotelSearchApi);
-            const isComplete = hotelRes?.data?.is_complete;
+            // ==============================
+            //       FLIGHT SEARCH FLOW
+            // ==============================
+            const allFlightSearchApi =
+              data?.response?.results?.view_all_flight_result_api?.url;
+            const allFlightSearchUuid =
+              data?.response?.results?.view_all_flight_result_api?.uuid;
 
-            // Clear old flight messages
-            dispatch(setClearflight());
+            if (allFlightSearchApi) {
+              dispatch(setAllOfferUUIDSend(allFlightSearchUuid));
+              dispatch(setAllOfferUrl(allFlightSearchApi));
+              dispatch(setFilterUrl(allFlightSearchApi));
 
-            if (isComplete) {
-              dispatch(setMessage({ ai: hotelRes.data, type: "hotel_result" }));
-            } else {
-              // Parse hotel filters from URL
-              let hotelName = null;
-              let hotelCategory = null;
-              let filterUrl = null;
+              const historyUrl = `/api/v1/search/${allFlightSearchUuid}/history`;
 
-              try {
-                const parsedUrl = new URL(
-                  hotelSearchApi,
-                  typeof window !== "undefined"
-                    ? window.location.origin
-                    : "https://demo.milesfactory.com"
-                );
-                hotelName = parsedUrl.searchParams.get("name");
-                hotelCategory = parsedUrl.searchParams.get("category");
-                if (parsedUrl.search && parsedUrl.search.length > 1) {
-                  filterUrl = hotelSearchApi;
-                }
-              } catch (err) {
-                console.warn("Invalid hotel filter URL:", err);
-              }
+              return Promise.all([
+                api.get(historyUrl).catch(() => null),
+                api.get(allFlightSearchApi).catch(() => null),
+              ])
+                .then(([historyRes, flightRes]) => {
+                  if (historyRes?.data?.search) {
+                    dispatch(
+                      setSearchHistorySend({ flight: historyRes.data.search })
+                    );
+                  }
 
-              dispatch(
-                setMessage({
-                  ai: {
-                    ...hotelRes.data,
-                    filters: {
-                      name: hotelName,
-                      category: hotelCategory,
-                      filterurl: filterUrl,
-                    },
-                  },
-                  type: "hotel_result",
+                  if (flightRes?.data) {
+                    const flightData = flightRes.data;
+
+                    if (!flightData?.offers?.length) {
+                      dispatch(
+                        setMessage({ ai: { response: "No flights found" } })
+                      );
+                    } else {
+                      dispatch(
+                        setMessage({
+                          ai: {
+                            ...flightData,
+                            url: allFlightSearchApi,
+                            response: data.response,
+                            append: true,
+                          },
+                          type: "flight_result",
+                        })
+                      );
+                    }
+                  }
+                });
+            }
+
+            // ==============================
+            //            HOTEL FLOW
+            // ==============================
+            const hotelSearchApi =
+              data?.response?.results?.view_hotel_search_api?.url;
+            const hotelSearchUuid =
+              data?.response?.results?.view_hotel_search_api?.uuid;
+            const hotelArguments =
+              data?.silent_function_template?.[0]?.function?.arguments || {};
+
+            if (hotelSearchApi) {
+              dispatch(setHotelSearchId(hotelSearchUuid));
+              dispatch(setSearchHistorySend({ hotel: hotelArguments }));
+
+              return api
+                .get(hotelSearchApi)
+                .then((hotelRes) => {
+                  const hotelData = hotelRes?.data;
+
+                  // clear previous flight results
+                  dispatch(setClearflight());
+
+                  if (hotelData?.is_complete) {
+                    dispatch(
+                      setMessage({ ai: hotelData, type: "hotel_result" })
+                    );
+                  } else {
+                    let filterUrl = null;
+                    let hotelName = null;
+                    let hotelCategory = null;
+
+                    try {
+                      const parsed = new URL(hotelSearchApi);
+                      hotelName = parsed.searchParams.get("name");
+                      hotelCategory = parsed.searchParams.get("category");
+                      if (parsed.search) filterUrl = hotelSearchApi;
+                    } catch (err) {
+                      console.warn("Invalid hotel filter URL:", err);
+                    }
+
+                    dispatch(
+                      setMessage({
+                        ai: {
+                          ...hotelData,
+                          filters: {
+                            name: hotelName,
+                            category: hotelCategory,
+                            filterurl: filterUrl,
+                          },
+                        },
+                        type: "hotel_result",
+                      })
+                    );
+                  }
                 })
-              );
+                .catch((err) => {
+                  dispatch(
+                    setMessage({
+                      ai: {
+                        response:
+                          err.response?.data || { error: err.message },
+                      },
+                      type: "hotel_error",
+                    })
+                  );
+                });
             }
-          } catch (err) {
-            console.error(
-              "Error fetching hotel results:",
-              err.response?.data || err.message
-            );
-            dispatch(
-              setMessage({
-                ai: { response: err.response?.data || { error: err.message } },
-                type: "hotel_error",
-              })
-            );
-          } finally {
-            dispatch(setLoading(false));
           }
-        }
-      }
+        });
+    };
+
+    // -------------------------------------------------
+    // MAIN THREAD FLOW (FIXED ⚡)
+    // -------------------------------------------------
+    if (!uuid) {
+      console.log("No thread → creating new thread…");
+      uuid = await createThread();   // 🔥 FIX: Wait for the thread
     }
-  } catch (error: any) {
-    console.log("Send Error:", error.response?.data || error.message);
-    dispatch(setLoading(false));
+
+    console.log("Sending message to thread:", uuid);
+    return sendToThread(uuid);
+
+  } catch (err: any) {
+    console.log("Send Error:", err.response?.data || err.message);
   } finally {
-    dispatch(setLoading(false));
+    // dispatch(setLoading(false));
   }
 };
 
 
-export const deleteAndCreateThread = () => async dispatch => {
+export const deleteAndCreateThread = () => async (dispatch, getState) => {
+  dispatch(setNewChatLoading(true));
+
   try {
-    dispatch(setNewChatLoading(true));
-
-    // 1️⃣ Create a new thread
     const res = await api.post(API_ENDPOINTS.CHAT.CREATE_THREAD_SEND);
-    const newUuid = res.data?.uuid;
-    if (!newUuid) throw new Error('Failed to create new thread');
+    const newUuid = res?.data?.uuid;
 
-    // 2️⃣ Reset all slices related to previous thread
+    if (!newUuid) {
+      throw new Error("Thread UUID missing from response");
+    }
+
+    // Reset all thread-related states
     dispatch(setLoading(false));
     dispatch(setAllPassengerFill(null));
     dispatch(setSelectedFlightKey(null));
@@ -380,37 +377,40 @@ export const deleteAndCreateThread = () => async dispatch => {
     dispatch(setResetAppendFlights());
     dispatch(setNoMoreFlights(false));
     dispatch(setThreadUuid(newUuid));
-    dispatch(setMobileNaveDrawer(false));
-    dispatch(setIsBuilderDialog(false));
+    
     dispatch(setClearChat());
-    dispatch(clearGetMessages());
+    // dispatch(clearGetMessages());
     dispatch(setSearchHistorySend(null));
-    dispatch(setSearchHistoryGet(null));
+    // dispatch(setSearchHistoryGe(null));
     dispatch(setAddBuilder(null));
     dispatch(setflightDetail(null));
     dispatch(setViewPassengers([]));
     dispatch(setAddFilledPassenger(null));
     dispatch(setHotelSearchId(null));
 
-    // Reset booking, hotel, passenger & baggage slices
-    dispatch(resetBookingState());
-    dispatch(resetHotelState());
+    // dispatch(resetBooking());
+    // dispatch(resetHotelStar());
     dispatch(resetPassengerFlightState());
-    dispatch(resetPassengerHotelState());
+    dispatch(resetPassengerFlightState());
     dispatch(resetBaggageState());
 
-    // Reset order & flight selections
     dispatch(setOrderUuid(null));
-    dispatch(setOrderUuidHotel(null));
+    dispatch(setOrderUuid(null));
 
-    // Optional: add a placeholder message for new thread
-    dispatch(setMessage({ ai: { newThread: true }, type: 'system' }));
+    dispatch(setMessage({ ai: { newThread: true }, type: "system" }));
   } catch (err) {
-    console.error('Failed to delete and create new thread:', err);
+    console.error("Failed to create new thread:", err);
+
+    // <-- FIX 404
+    if (err?.response?.status === 404) {
+      console.warn("Thread API 404 → Wrong path or backend endpoint missing");
+    }
   } finally {
     dispatch(setNewChatLoading(false));
   }
 };
+
+
 
 export const {
   setLoading,

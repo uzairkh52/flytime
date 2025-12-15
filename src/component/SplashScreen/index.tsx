@@ -14,16 +14,24 @@ const SplashScreen = ({ data, handleSplesh, handleSkip }) => {
     const {loginState} = useSelector((state: RootState) => state?.login);
     const isLogin = useSelector((state: RootState) => state);
     const navigation = useNavigation();
-    console.log("loginState_001", isLogin)
+    console.log("loginState_001", loginState)
 
     useEffect(() => {
-        if (loginState === true) {
+        if (loginState) {
             navigation.reset({
                 index: 0,
-                routes: [{ name: "HomeScreen" }],
-            })
+                routes: [
+                    {
+                        name: "MainTabs",
+                        params: {
+                            screen: "HomeTab",
+                        },
+                    },
+                ],
+            });
         }
     }, [loginState]);
+
     
 
 

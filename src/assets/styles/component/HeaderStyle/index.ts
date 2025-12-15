@@ -48,8 +48,12 @@ export const headerStyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  
+  
 
 
 
 });
 
+
+  

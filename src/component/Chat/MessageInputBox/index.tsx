@@ -32,11 +32,12 @@ import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { ChatStyle } from "../../../assets/styles/component/ChatStyle";
 
 
 interface MessageInputBoxProps {
   isMessageHome?: any;
-  isHomePage?: boolean;
+  isHomeScreen?: boolean;
   isSticky?: boolean;
   HeaderInput?: boolean;
   messagesEndRef?: any;
@@ -49,6 +50,7 @@ const MessageInputBox = ({
   isSticky,
   messagesEndRef,
   isChat,
+  isHomeScreen,
 }: MessageInputBoxProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isMicActive, setIsMicActive] = useState(false);
@@ -64,7 +66,13 @@ const MessageInputBox = ({
 
 
   const handleSend = async () => {
+    console.log("isHomeScreen22", isHomeScreen);
+    
     if (!inputValue.trim()) return;
+    console.log("sendMessage_trigger", inputValue);
+    if (isHomeScreen) {
+      await dispatch(deleteAndCreateThread());  // WAIT FOR NEW UUID
+    }
     dispatch(sendMessage(inputValue));
     console.log('inputValue', inputValue);
     dispatch(clearInputValue());
@@ -83,16 +91,22 @@ const MessageInputBox = ({
       style={[styles.container, isSticky && styles.sticky]}
     >
 
-      <View style={homeStyle.formGroup}>
+      <View style={`${isChat ? ChatStyle.formGroup : homeStyle.formGroup}`}>
         {/* Text input */}
         {!isTyping && (
-          <Text style={[homeStyle.label, mainStyle.white]}>
+          <Text
+
+            style={[
+              isChat ? ChatStyle.label : homeStyle.label,
+              mainStyle.white
+            ]}
+          >
             Ask Mylz to plan your trip
           </Text>
         )}
         <TextInput
           ref={inputRef}
-          style={homeStyle.formControl}
+          style={isChat ? ChatStyle.formControl : homeStyle.formControl}
 
           value={inputValue}
           onChangeText={(text) => {
@@ -104,14 +118,14 @@ const MessageInputBox = ({
           returnKeyType="send"
         />
 
-        <TouchableOpacity style={[mainStyle.Btn, mainStyle.BtnPrimary, mainStyle.BtnX]}>
-            <FontAwesome5 name="arrow-right" size={20} style={mainStyle.white} />
+        <TouchableOpacity onPress={handleSend} style={[homeStyle.BsendBtn, mainStyle.Basecolor1Bg, mainStyle.justifyContentCenter, mainStyle.alignItemsCenter]}>
+          <FontAwesome5 name="arrow-right" style={[mainStyle.white, homeStyle.arrow]} />
         </TouchableOpacity>
-              
-      {/* <AntDesign name="search1" size={40} color="green" />
+
+        {/* <AntDesign name="search1" size={40} color="green" />
         <IconButton icon="rocket" size={30} /> */}
 
-    </View>
+      </View>
 
       {/* Optional: Mobile Builder */}
 

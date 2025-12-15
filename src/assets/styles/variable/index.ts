@@ -5,6 +5,8 @@ export const variable = {
      COLORS  (Converted from SCSS)
   ============================================================ */
 
+  headerHEight: 80,
+  containerPaddingTop: 16,
   // Primary color 1
   basecolor: "#69707B",
   homeInputButton: 32,
@@ -29,7 +31,7 @@ export const variable = {
 
   // Primary color 2
   yellow: "#cdea1a",
-  basecolor2: "#e7003f",
+  basecolor2: "#006B51",
   bc2Light: "#69ce82",
   bc2Lighter: "#cdd7c9",
   bc2Lightest: "#f2f4e9",
