@@ -2,6 +2,14 @@ import { StyleSheet } from "react-native";
 import { variable } from "../../variable";
 
 export const ChatStyle = StyleSheet.create({
+    main: {
+        
+        flex:1,
+        backgroundColor:"#fff",
+    },
+    MessageBody: {
+        backgroundColor:variable.white,
+    },
     formGroup: {
             position:"relative",
         },

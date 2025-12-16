@@ -5,6 +5,7 @@ import UserMessage from "./UserMessage";
 import AiMessage from "./AiMessage";
 import { mainStyle } from "../../../assets/styles/component/mainStyle";
 import { variable } from "../../../assets/styles/variable";
+import { ChatStyle } from "../../../assets/styles/component/ChatStyle";
 
 const Messages = ({ scrollY }) => {
   const scrollRef = useRef<Animated.ScrollView>(null);
@@ -24,19 +25,18 @@ const Messages = ({ scrollY }) => {
   return (
     <Animated.ScrollView
       ref={scrollRef}
-      style={[mainStyle.container, mainStyle.flex1]}
+      style={[mainStyle.container, mainStyle.flex1, ChatStyle.MessageBody, {backgroundColor: variable.white}]}
+      
       
       scrollEventThrottle={16}
-      contentContainerStyle={{
-        paddingTop: variable.headerHEight + variable.containerPaddingTop,
-        paddingBottom: 100, // space for input box
-      }}
+      contentContainerStyle={[mainStyle.mainBody]}
       keyboardShouldPersistTaps="handled"
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false }
       )}
       showsVerticalScrollIndicator={false}
+      
     >
       {messages.length > 0 ? (
         messages.map((msg, index) => (

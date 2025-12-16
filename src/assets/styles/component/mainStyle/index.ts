@@ -60,6 +60,9 @@ export const mainStyle = StyleSheet.create({
   red: { color: variable.red },
   blue: { color: variable.blue },
   cyan: { color: variable.cyan },
+  mainBody: {
+    paddingTop: variable.headerHEight + variable.containerPaddingTop
+  },
   container: {
     paddingHorizontal: 15,
   },

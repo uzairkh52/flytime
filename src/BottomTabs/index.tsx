@@ -4,6 +4,8 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../Screens/HomeScreen";
 import { MyTrip } from "../store/slices/baseSlice";
 import MyTripScreen from "../Screens/MyTripScreen";
+import PrevThreadScreen from "../Screens/PrevThreadScreen";
+import MyAccount from "../Screens/MyAccount";
 
 
 const Tab = createBottomTabNavigator();
@@ -21,7 +23,7 @@ export default function BottomTabs() {
         },
       }}
     >
-      
+
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
@@ -32,7 +34,7 @@ export default function BottomTabs() {
           ),
         }}
       />
-        <Tab.Screen
+      <Tab.Screen
         name="MyTripTab"
         component={MyTripScreen}
         options={{
@@ -55,10 +57,9 @@ export default function BottomTabs() {
       />
 
       <Tab.Screen
-        name="HistoryTab"
-        component={"HistoryStack"}
+        name="History"
+        component={PrevThreadScreen}
         options={{
-          tabBarLabel: "History",
           tabBarIcon: ({ color, size }) => (
             <Icon name="history" color={color} size={size} />
           ),
@@ -66,10 +67,10 @@ export default function BottomTabs() {
       />
 
       <Tab.Screen
-        name="AccountTab"
-        component={"AccountStack"}
+        name="MyAccount"
+        component={MyAccount}
         options={{
-          tabBarLabel: "Account",
+          
           tabBarIcon: ({ color, size }) => (
             <Icon name="account" color={color} size={size} />
           ),

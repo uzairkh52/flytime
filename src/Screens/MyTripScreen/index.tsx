@@ -86,7 +86,7 @@ import { variable } from "../../assets/styles/variable";
       </AnimatedHeader>
         <Animated.ScrollView
           scrollEventThrottle={16}
-          contentContainerStyle={{paddingTop: variable.headerHEight + variable.containerPaddingTop}}
+          contentContainerStyle={mainStyle.mainBody}
           keyboardShouldPersistTaps={"handled"}
           onScroll={Animated.event(
             [{ 

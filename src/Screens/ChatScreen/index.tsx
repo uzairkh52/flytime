@@ -5,6 +5,8 @@ import MessageInputBox from "../../component/Chat/MessageInputBox";
 import Messages from "../../component/Chat/Messages";
 import CheckoutControl from "../../component/Search/CheckoutControl";
 import AnimatedHeader from "../../component/Layout/AnimatedHeader";
+import { ChatStyle } from "../../assets/styles/component/ChatStyle";
+import { mainStyle } from "../../assets/styles/component/mainStyle";
 
 const ChatScreen = () => {
   const panelRef = useRef(null);
@@ -14,14 +16,16 @@ const ChatScreen = () => {
 
   return (
     <>
+    <View style={[mainStyle.lightgrayBg, ChatStyle.main, { flex: 1 }]}>
       <AnimatedHeader scrollY={scrollY}>
         <View>
 
         </View>
-        </AnimatedHeader>
+      </AnimatedHeader>
       <Messages scrollY={scrollY} />
       <CheckoutControl />      
       <MessageInputBox isChat  />
+    </View>
     </>
   );
 };

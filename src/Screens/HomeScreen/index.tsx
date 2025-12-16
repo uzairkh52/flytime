@@ -21,6 +21,7 @@ import AnimatedHeader from "../../component/Layout/AnimatedHeader";
 import HeaderLeftUser from "../../component/Layout/Header/HeaderLeft";
 import HeaderUser from "../../component/Layout/Header/HeaderUser";
 import { variable } from "../../assets/styles/variable";
+import HomeHeroSection from "../../component/HomeScreenContent/homeHeroSection";
 
 const HEADER_HEIGHT = 80; // adjust based on your design
 
@@ -71,10 +72,7 @@ const HomeScreen = () => {
         )}
       >
         {/* Hero Section */}
-        <View style={[mainStyle.container, homeStyle.Header]}>
-          <Text style={[mainStyle.p, mainStyle.basecolor]}>Where do you want to go?</Text>
-          <Text style={[mainStyle.h1, mainStyle.Basecolor1]}>Let's Plan Your Trip</Text>
-        </View>
+        <HomeHeroSection />
 
         {/* Body */}
         <View style={[mainStyle.container, homeStyle.Body]}>

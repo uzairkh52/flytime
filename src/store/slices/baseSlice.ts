@@ -8,6 +8,7 @@ interface BaseState {
   isloading: any;
   TripData: any;
   TripDetailData: any;
+  ThreadData: any
 }
 
 const initialState: BaseState = {
@@ -22,12 +23,16 @@ const initialState: BaseState = {
   inputValue: "",
   isloading: false,
   TripDetailData: null,
+  ThreadData: null
 };
 
 export const baseSlice = createSlice({
   name: 'base',
   initialState,
   reducers: {
+    setThreadData:(state, action)=> {
+      state.ThreadData = action.payload;
+    },
     setTripDetailData: (state, action) => {
       state.TripDetailData = action.payload;
     },
@@ -62,6 +67,19 @@ export const baseSlice = createSlice({
 });
 
 // my trips
+export const  fetchThread = () => async (dispatch :any) => {
+  dispatch(seIsloading(true));
+  try {
+    const url = "/api/v1/chat/thread/all"
+    const res = await api.get(url);
+    console.log("fetchres", res);
+    dispatch(seIsloading(false));
+    dispatch(setThreadData(res.data))
+    
+  } catch (error) {
+    console.log("fetch_error", error);
+  }
+}
 
 export const MyTrip = () => async (dispatch: any) => {
   dispatch(seIsloading(true));
@@ -98,5 +116,5 @@ export const TripDetail = (uuid) => (dispatch, getState) => {
     });
 };
 
-export const {setTripData, setTripDetailData, seIsloading, clearInputValue, setInputValue, increment, decrement, incrementByAmount } = baseSlice.actions;
+export const {setTripData, setThreadData, setTripDetailData, seIsloading, clearInputValue, setInputValue, increment, decrement, incrementByAmount } = baseSlice.actions;
 export default baseSlice.reducer;
